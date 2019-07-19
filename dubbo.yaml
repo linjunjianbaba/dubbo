@@ -1,0 +1,40 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: dubbo
+  labels:
+    app: dubbo
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: dubbo
+    spec:
+      containers:
+      - name: dubbo
+        image: k8sz/dobbu
+        ports:
+        - name: http
+          containerPort: 8080
+        resources:
+          requests:
+            memory: "4Gi"
+            cpu: "2"
+        env: 
+        - name: JAVA_OPTS
+          value: "-Duser.timezone=Asia/Shanghai -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:MaxRAMFraction=1 -Djava.security.egd=file:/dev/./urandom"
+--- 
+apiVersion: v1
+kind: Service
+metadata:
+  name: dubbo
+  labels:
+    app: dubbo
+spec:
+  selector:
+    app: dubbo
+  ports:
+  - port: 8080
+    name: http
+  type: NodePort
